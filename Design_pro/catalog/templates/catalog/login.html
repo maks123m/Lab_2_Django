@@ -1,0 +1,30 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="mb-4">Вход</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label>Логин</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label>Пароль</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <div class="text-danger">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+body {
+    background: #2c2c2c;
+}
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+aside {
+    width: 20%;
+    background: #181818;
+    color: #fff;
+    padding: 2.5%;
+    border-right: 5px solid #4d4d4d;
+}
+
+
+aside .logo {
+    font-size: 40px;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+
+aside h3{
+    font-size: 25px;
+    margin-top: 50px;
+}
+
+aside ul {list-style: none;}
+aside ul li a {
+    font-size: 18px;
+    color: #fff;
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    transition: .6s;
+}
+
+
+aside ul li:hover, aside ul a:hover {
+    color: #a100fb;
+    text-decoration: none;
+    transform: scale(1.05);
+}
+
+.cards {
+    color: #fff;
+    margin-top: 100px;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+    color: #fff;
+    background: #2c2c2c;
+}
+
+.form-check-reverse .form-check-label {
+    text-align: right;
+    padding-left: 10px;
+}
