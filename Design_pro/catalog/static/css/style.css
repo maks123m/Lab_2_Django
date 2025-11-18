@@ -45,7 +45,6 @@ aside ul li:hover, aside ul a:hover {
 }
 
 .cards {
-    color: #fff;
     margin-top: 100px;
     text-align: center;
 }
@@ -53,10 +52,4 @@ aside ul li:hover, aside ul a:hover {
 main {
     padding: 20px;
     color: #fff;
-    background: #2c2c2c;
-}
-
-.form-check-reverse .form-check-label {
-    text-align: right;
-    padding-left: 10px;
 }
