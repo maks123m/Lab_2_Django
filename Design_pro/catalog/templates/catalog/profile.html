@@ -3,6 +3,10 @@
 
 {% block content %}
 {% block title %} <h1> Профиль </h1> {% endblock%}
-<p>Это ваш профиль и мы его видим тоже >:)</p>
+    {% if user.is_authenticated %} 
+        Привет {{ user.username }}
+    {% endif %}
+<p>Это Твой профиль
+    P.S. мы его видим тоже (Твой фсб) >:)</p>
 
 {% endblock %}

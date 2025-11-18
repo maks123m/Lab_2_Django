@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
+from .forms import CustomRegistrationForm
+from .models import UserProfile
 from django.contrib.auth import login as auth_login
-from .forms import CustomRegisterForm
 
 
 def index(request):
@@ -11,13 +13,25 @@ def index(request):
 
 def register(request):
     if request.method == 'POST':
-        form = CustomRegisterForm(request.POST)
+        form = CustomRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
+            )
+
+            UserProfile.objects.create(
+                user=user,
+                full_name=form.cleaned_data['full_name'],
+                consent=True
+            )
+
             auth_login(request, user)
-            return redirect('home')
+            return redirect('profile')
     else:
-        form = CustomRegisterForm()
+        form = CustomRegistrationForm()
+
     return render(request, 'catalog/register.html', {'form': form})
 
 
@@ -31,5 +45,4 @@ def profile(request):
 
 def custom_logout(request):
     logout(request)
-    return redirect('home')
-
+    return redirect('profile')
