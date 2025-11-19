@@ -90,3 +90,10 @@ def delete_application(request, pk):
         return redirect('my_applications')
 
     return render(request, 'catalog/confirm_delete.html', {'application': app})
+
+
+def home(request):
+    applications = Application.objects.filter(status='new').select_related('user', 'category').order_by('-created_at')
+    return render(request, 'catalog/index.html', {
+        'applications': applications
+    })

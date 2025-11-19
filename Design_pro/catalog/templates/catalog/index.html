@@ -1,11 +1,44 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
+<div class="container mt-4">
+    <div class="jumbotron bg-light p-4 rounded">
+        <h1 class="display-5 text-dark"><i class="fa-solid fa-house"></i> Главная</h1>
+        <p class="lead text-dark">Заявки на разработку дизайна интерьера от пользователей.</p>
+    </div>
 
-{% block title %} <h1> Главная страница </h1> {% endblock%}
-<div>
-    <h2>ЗАЯВКИ</h2>
-    <p>они тут точно будут...</p>
+    <h3 class="mt-4">Актуальные заявки ({{ applications.count }})</h3>
+
+    {% if applications %}
+        <div class="row row-cols-1 g-3 mt-2">
+            {% for app in applications %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">{{ app.title }}</h5>
+                            <span class="badge bg-primary">{{ app.category }}</span>
+                        </div>
+                        <p class="card-text text-muted">
+                            <i class="fa-solid fa-user"></i> {{ app.user.username }} • 
+                            <i class="fa-solid fa-clock"></i> {{ app.created_at|date:"d.m.Y H:i" }}
+                        </p>
+                        <p class="card-text">{{ app.description|truncatewords:20 }}</p>
+
+                        {% if app.photo %}
+                            <img src="{{ app.photo.url }}" class="img-fluid rounded mt-2" 
+                                 style="max-height: 150px; object-fit: cover;" alt="Фото">
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4">
+            <i class="fa-solid fa-info-circle"></i> Нет активных заявок.
+        </div>
+    {% endif %}
 </div>
-
 {% endblock %}
