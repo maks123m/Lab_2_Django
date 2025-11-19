@@ -1,0 +1,57 @@
+{% extends "base_generic.html" %}
+{% load status_filters %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2><i class="fa-solid fa-list-check"></i> Мои заявки</h2>
+
+        {% if applications %}
+            <div class="row row-cols-1 g-3 mt-2">
+                {% for app in applications %}
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {{ app.title }}
+                                    <span class="badge bg-{{ app.get_status_display|status_badge }}">
+                                {{ app.get_status_display }}
+                            </span>
+                                </h5>
+                                <p class="card-text"><strong>Описание:</strong> {{ app.description }}</p>
+                                <p class="card-text"><strong>Категория:</strong> {{ app.category }}</p>
+                                <p class="card-text text-muted">
+                                    <i class="fa-solid fa-clock"></i>
+                                    {{ app.created_at|date:"d.m.Y H:i" }}
+                                </p>
+
+
+                                {% if app.photo %}
+                                    <img src="{{ app.photo.url }}" class="img-fluid rounded mt-2"
+                                         style="max-height: 200px; object-fit: cover;" alt="Фото">
+                                {% else %}
+                                    <div class="text-center py-3">
+                                        <i class="fa-solid fa-image text-secondary"></i>
+                                        <small class="d-block mt-1">Без изображения</small>
+                                    </div>
+                                {% endif %}
+                            
+                                {% if app.status == 'new' %}
+                                    <div class="mt-3">
+                                        <a href="{% url 'delete_application' app.pk %}"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-trash"></i> Удалить
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info mt-4">
+                <i class="fa-solid fa-info-circle"></i> У вас пока нет заявок.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

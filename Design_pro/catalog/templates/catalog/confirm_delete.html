@@ -1,0 +1,27 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-danger" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header bg-danger text-white">
+            <h4><i class="fa-solid fa-triangle-exclamation"></i> Подтверждение удаления</h4>
+        </div>
+        <div class="card-body">
+            <p>Вы уверены, что хотите удалить заявку:</p>
+            <h5 class="text-danger">{{ application.title }}</h5>
+            <p class="text-muted">Статус: "{{ application.get_status_display }}"</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa-solid fa-trash-can"></i> Да, удалить
+                </button>
+                <a href="{% url 'my_applications' %}" class="btn btn-secondary">
+                    <i class="fa-solid fa-xmark"></i> Отмена
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

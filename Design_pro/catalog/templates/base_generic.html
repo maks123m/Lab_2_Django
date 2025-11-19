@@ -6,7 +6,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {% bootstrap_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link href="http://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
 </head>
 <body>
@@ -16,17 +16,18 @@
         <span class="logo"><h1>DESIGN.PRO</h1></span>
         <ul>
             <h3>Навигация</h3>
-            <li><a href="{% url 'home'%}"><i class="fa-solid fa-house"></i> Главная</a></li>
+            <li><a href="{% url 'home' %}"><i class="fa-solid fa-house"></i> Главная</a></li>
 
 
             {% if user.is_authenticated %}
-            <li><a href="{% url 'profile' %}"><i class="fa-solid fa-address-card"></i> Профиль</a></li>
-
-            <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Выйти</a></li>
+                <li><a href="{% url 'profile' %}"><i class="fa-solid fa-address-card"></i> Профиль</a></li>
+                <li><a href="{% url 'create_application' %}"><i class="fa-solid fa-file-circle-plus"></i>Создать заявку</a></li>
+                <li><a href="{% url 'my_applications' %}"><i class="fa-solid fa-list"></i> Мои заявки</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Выйти</a></li>
 
             {% else %}
-            <li><a href="{% url 'register' %}"><i class="fa-solid fa-user-plus"></i> Регистрация</a></li>
-            <li><a href="{% url 'login' %}"><i class="fa-solid fa-arrow-right-to-bracket"></i> Вход</a></li>
+                <li><a href="{% url 'register' %}"><i class="fa-solid fa-user-plus"></i> Регистрация</a></li>
+                <li><a href="{% url 'login' %}"><i class="fa-solid fa-arrow-right-to-bracket"></i> Вход</a></li>
             {% endif %}
         </ul>
 

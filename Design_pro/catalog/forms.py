@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from .models import Application
 
 class CustomRegistrationForm(forms.Form):
     full_name = forms.CharField(
@@ -67,3 +68,40 @@ class CustomRegistrationForm(forms.Form):
         if not consent:
             raise ValidationError('Вы должны согласиться на обработку персональных данных.')
         return consent
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['title', 'description', 'category', 'photo']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'title': 'Название',
+            'description': 'Описание',
+            'category': 'Категория',
+            'photo': 'Фото помещения (jpg, jpeg, png, bmp, до 2 МБ)',
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if not photo:
+            raise ValidationError('Пожалуйста, загрузите фото.')
+
+        allowed_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+        ext = photo.name.split('.')[-1].lower()
+        if f'.{ext}' not in allowed_extensions:
+            raise ValidationError('Недопустимый формат. Разрешены: jpg, jpeg, png, bmp.')
+
+
+        if photo.size > 2 * 1024 * 1024:
+            raise ValidationError('Файл слишком большой. Максимум — 2 МБ.')
+
+        return photo
