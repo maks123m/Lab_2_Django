@@ -1,64 +1,69 @@
-import re
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
-
-class CustomRegisterForm(forms.Form):
+class CustomRegistrationForm(forms.Form):
     full_name = forms.CharField(
-        label="ФИО",
-        max_length=100,
+        max_length=150,
+        label='ФИО',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        validators=[
+            RegexValidator(
+                regex=r'^[а-яА-ЯёЁ\- ]+$',
+                message='ФИО должно содержать только кириллические буквы, дефис и пробелы.'
+            )
+        ]
     )
     username = forms.CharField(
-        label="Логин",
-        max_length=30,
+        max_length=150,
+        label='Логин',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        validators=[
+            RegexValidator(
+                regex=r'^[a-zA-Z\-]+$',
+                message='Логин может содержать только латинские буквы и дефис.'
+            )
+        ]
     )
     email = forms.EmailField(
-        label="Email",
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
     password = forms.CharField(
-        label="Пароль",
+        label='Пароль',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
-    password2 = forms.CharField(
-        label="Повтор пароля",
+    password_confirm = forms.CharField(
+        label='Повтор пароля',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
     consent = forms.BooleanField(
-        label="Согласие на обработку персональных данных",
-        required=True,
+        label='Согласие на обработку персональных данных',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
-    def clean_full_name(self):
-        full_name = self.cleaned_data.get('full_name')
-        if not re.match(r'^[а-яА-ЯёЁ\s\-]+$', full_name):
-            raise ValidationError("ФИО может содержать только кириллические буквы, пробелы и дефис.")
-        return full_name
-
     def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if not re.match(r'^[a-zA-Z\-]+$', username):
-            raise ValidationError("Логин может содержать только латинские буквы и дефис.")
+        username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise ValidationError("Пользователь с таким логином уже существует.")
+            raise ValidationError('Пользователь с таким логином уже существует.')
         return username
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise ValidationError("Пользователь с таким email уже зарегистрирован.")
+            raise ValidationError('Пользователь с таким email уже зарегистрирован.')
         return email
 
-    def clean_password2(self):
+    def clean_password_confirm(self):
         password = self.cleaned_data.get('password')
-        password2 = self.cleaned_data.get('password2')
-        if password and password2 and password != password2:
-            raise ValidationError("Пароли не совпадают.")
-        return password2
+        password_confirm = self.cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise ValidationError('Пароли не совпадают.')
+        return password_confirm
 
-    def save(self):
-        user = User.objects.create_user(
-            username=self.cleaned_data['username'],
-            email=self.cleaned_data['email'],
-            password=self.cleaned_data['password']
-        )
-
-        return user
+    def clean_consent(self):
+        consent = self.cleaned_data.get('consent')
+        if not consent:
+            raise ValidationError('Вы должны согласиться на обработку персональных данных.')
+        return consent

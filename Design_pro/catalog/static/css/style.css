@@ -44,11 +44,6 @@ aside ul li:hover, aside ul a:hover {
     transform: scale(1.05);
 }
 
-.cards {
-    margin-top: 100px;
-    text-align: center;
-}
-
 main {
     padding: 20px;
     color: #fff;
