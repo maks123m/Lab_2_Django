@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
 
@@ -77,7 +76,6 @@ def my_applications(request):
 def delete_application(request, pk):
     app = get_object_or_404(Application, pk=pk, user=request.user)
     if app.status != 'new':
-        messages.error(request, 'Нельзя удалить заявку со статусом «Принято в работу» или «Выполнено».')
         return redirect('my_applications')
 
     if request.method == 'POST':
@@ -98,7 +96,6 @@ class CategoryForm(forms.ModelForm):
 @login_required
 def admin_categories(request):
     if not request.user.is_superuser:
-        messages.error(request, 'Доступ запрещён.')
         return redirect('home')
 
     if request.method == 'POST':
@@ -119,7 +116,6 @@ def admin_categories(request):
 @login_required
 def admin_category_delete(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, 'Доступ запрещён.')
         return redirect('home')
 
     category = get_object_or_404(Category, pk=pk)
@@ -128,20 +124,9 @@ def admin_category_delete(request, pk):
     return redirect('admin_categories')
 
 
-class UpdateStatusForm(forms.ModelForm):
-    class Meta:
-        model = Application
-        fields = ['status', 'admin_comment', 'design_image']
-        widgets = {
-            'admin_comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'design_image': forms.FileInput(attrs={'class': 'form-control'}),
-        }
-
-
 @login_required
 def admin_panel(request):
     if not request.user.is_superuser:
-        messages.error(request, 'Доступ запрещён.')
         return redirect('home')
 
     applications = Application.objects.exclude(status='completed').order_by('-created_at')
@@ -156,27 +141,25 @@ def admin_panel(request):
             if new_status == 'in_progress':
                 comment = request.POST.get('admin_comment', '').strip()
                 if not comment:
-                    messages.error(request, 'Для статуса «Принято в работу» требуется комментарий.')
                     return redirect('admin_panel')
                 app.admin_comment = comment
             elif new_status == 'completed':
-                if not request.FILES.get('design_image'):
-                    messages.error(request, 'Для статуса «Выполнено» требуется изображение дизайна.')
+                design_image = request.FILES.get('design_image')
+                if not design_image:
                     return redirect('admin_panel')
-                app.design_image = request.FILES['design_image']
+                app.design_image = design_image
             else:
-                messages.error(request, 'Недопустимый статус.')
                 return redirect('admin_panel')
         elif old_status == 'in_progress' and new_status == 'completed':
-            if not request.FILES.get('design_image'):
-                messages.error(request, 'Для завершения заявки требуется изображение дизайна.')
+            design_image = request.FILES.get('design_image')
+            if not design_image:
                 return redirect('admin_panel')
-            app.design_image = request.FILES['design_image']
+            app.design_image = design_image
         else:
-            messages.error(request, 'Нельзя изменить статус этой заявки.')
             return redirect('admin_panel')
+
         app.status = new_status
         app.save()
         return redirect('admin_panel')
 
-    return render(request, 'catalog/admin_panel.html', {'applications': applications,})
+    return render(request, 'catalog/admin_panel.html', {'applications': applications})

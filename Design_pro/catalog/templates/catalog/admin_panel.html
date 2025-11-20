@@ -20,24 +20,24 @@
                         <p><strong>Пользователь:</strong> {{ app.user.username }}</p>
                         <p><strong>Категория:</strong> {{ app.category }}</p>
                         <p><strong>Описание:</strong> {{ app.description }}</p>
-                    
+
                         {% if app.admin_comment %}
                             <div class="mb-2">
                                 <strong>Комментарий администратора:</strong>
                                 <p class="text-muted">{{ app.admin_comment }}</p>
                             </div>
                         {% endif %}
-                    
+
                         {% if app.design_image %}
                             <div class="mb-2">
                                 <strong>Текущий дизайн:</strong><br>
-                                <img src="{{ app.design_image.url }}" 
-                                     class="img-fluid rounded mt-2" 
+                                <img src="{{ app.design_image.url }}"
+                                     class="img-fluid rounded mt-2"
                                      style="max-height: 200px; object-fit: cover;"
                                      alt="Дизайн">
                             </div>
                         {% endif %}
-                    
+
                         <form method="post" enctype="multipart/form-data" class="mt-4">
                             {% csrf_token %}
                             <input type="hidden" name="application_id" value="{{ app.id }}">
@@ -54,16 +54,13 @@
                                     {% endif %}
                                 </select>
                             </div>
-                        
+
                             {% if app.status == 'new' %}
                                 <div class="mb-3">
-                                    <label class="form-label">
-                                        Комментарий (обязателен при выборе «Принято в работу»)
-                                    </label>
                                     <textarea name="admin_comment" class="form-control" rows="2">{{ app.admin_comment }}</textarea>
                                 </div>
                             {% endif %}
-                        
+
                             <div class="mb-3">
                                 <label class="form-label">
                                     Новое изображение дизайна (обязательно при выборе «Выполнено»)
