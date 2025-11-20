@@ -66,9 +66,17 @@ def create_application(request):
 
 @login_required
 def my_applications(request):
-    applications = Application.objects.filter(user=request.user).order_by('-created_at')
+    applications = Application.objects.filter(user=request.user)
+
+    status_filter = request.GET.get('status')
+    if status_filter in ['new', 'in_progress', 'completed']:
+        applications = applications.filter(status=status_filter)
+
+    applications = applications.order_by('-created_at')
+
     return render(request, 'catalog/my_applications.html', {
-        'applications': applications
+        'applications': applications,
+        'current_status': status_filter,
     })
 
 
