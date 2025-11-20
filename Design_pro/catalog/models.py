@@ -15,12 +15,15 @@ class UserProfile(models.Model):
     def __str__(self):
         return f'{self.full_name} ({self.user.username})'
 
-
 class Category(models.Model):
     name = models.CharField(max_length=150)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 class Application(models.Model):
     STATUS_CHOICES = [
@@ -36,6 +39,9 @@ class Application(models.Model):
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='new')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    admin_comment = models.TextField('Комментарий администратора')
+    design_image = models.ImageField('Дизайн-изображение', upload_to='designs/')
 
     def __str__(self):
         return self.title

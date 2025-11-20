@@ -12,4 +12,7 @@ urlpatterns = [
     path('create/', views.create_application, name='create_application'),
     path('my/', views.my_applications, name='my_applications'),
     path('delete/<int:pk>/', views.delete_application, name='delete_application'),
+    path('admin/categories/', views.admin_categories, name='admin_categories'),
+    path('admin/categories/delete/<int:pk>/', views.admin_category_delete, name='admin_category_delete'),
+    path('admin-panel/', views.admin_panel, name='admin_panel'),
 ]

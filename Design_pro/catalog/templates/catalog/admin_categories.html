@@ -1,0 +1,52 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fa-solid fa-tags"></i> Управление категориями</h2>
+
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            Добавить новую категорию
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-success">
+                    <i class="fa-solid fa-plus"></i> Добавить категорию
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <h4>Существующие категории ({{ categories.count }})</h4>
+    {% if categories %}
+        <div class="list-group">
+            {% for cat in categories %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ cat.name }}</span>
+                <form method="post" 
+                      action="{% url 'admin_category_delete' cat.pk %}" 
+                      style="display: inline;"
+                      onsubmit="return confirm('Вы уверены?\\n\\nБудут удалены ВСЕ заявки в категории «{{ cat.name }}»!');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fa-solid fa-trash"></i> Удалить
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Нет категорий.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,8 +1,34 @@
 {% extends "base_generic.html" %}
 
-
 {% block content %}
-{% block title %} <h1> Профиль </h1> {% endblock%}
-Привет {{ user.username }}
+    <div class="container mt-4">
+        <h2><i class="fa-solid fa-address-card"></i> Мой профиль</h2>
 
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Личные данные</h5>
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>ФИО:</strong>
+                        <span class="text-dark">{{ user.profile.full_name }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Логин:</strong>
+                        <span class="text-dark">{{ user.username }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Email:</strong>
+                        <span class="text-dark">{{ user.email }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Согласие на обработку персональных данных:</strong>
+                        <span class="text-{{ user.profile.consent|yesno:'success,danger' }}">
+                        {{ user.profile.consent|yesno:"Да,Нет" }}
+                    </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}

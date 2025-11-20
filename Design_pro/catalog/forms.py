@@ -103,5 +103,4 @@ class ApplicationForm(forms.ModelForm):
 
         if photo.size > 2 * 1024 * 1024:
             raise ValidationError('Файл слишком большой. Максимум — 2 МБ.')
-
         return photo

@@ -1,44 +1,60 @@
 {% extends "base_generic.html" %}
-{% load static %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="jumbotron bg-light p-4 rounded">
         <h1 class="display-5 text-dark"><i class="fa-solid fa-house"></i> Главная</h1>
-        <p class="lead text-dark">Заявки на разработку дизайна интерьера от пользователей.</p>
+        <p class="lead text-dark">Последние реализованные проекты и статистика.</p>
     </div>
 
-    <h3 class="mt-4">Актуальные заявки ({{ applications.count }})</h3>
+    <section class="mt-5">
+        <h3>
+            <i class="fa-solid fa-check-circle text-success"></i> 
+            Последние выполненные проекты
+        </h3>
+        <p class="text-white">Последние 4 завершённых дизайна интерьера</p>
 
-    {% if applications %}
-        <div class="row row-cols-1 g-3 mt-2">
-            {% for app in applications %}
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">{{ app.title }}</h5>
-                            <span class="badge bg-primary">{{ app.category }}</span>
-                        </div>
-                        <p class="card-text text-muted">
-                            <i class="fa-solid fa-user"></i> {{ app.user.username }} • 
-                            <i class="fa-solid fa-clock"></i> {{ app.created_at|date:"d.m.Y H:i" }}
-                        </p>
-                        <p class="card-text">{{ app.description|truncatewords:20 }}</p>
-
+        {% if completed_applications %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for app in completed_applications %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
                         {% if app.photo %}
-                            <img src="{{ app.photo.url }}" class="img-fluid rounded mt-2" 
-                                 style="max-height: 150px; object-fit: cover;" alt="Фото">
+                            <img src="{{ app.photo.url }}" class="card-img-top" alt="Фото проекта" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fa-solid fa-image fa-3x text-secondary"></i>
+                            </div>
                         {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ app.title }}</h5>
+                            <p class="card-text text-muted small">
+                                <i class="fa-solid fa-tag"></i> {{ app.category }}<br>
+                                <i class="fa-solid fa-clock"></i> {{ app.created_at|date:"d.m.Y" }}
+                            </p>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fa-solid fa-info-circle"></i> Нет выполненных проектов.
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="mt-5">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h4>
+                    <i class="fa-solid fa-tools text-warning"></i>
+                    Заявок в работе
+                </h4>
+                <p class="display-3 text-warning mb-0">{{ in_progress_count }}</p>
+                <p class="text-muted mt-2">Количество проектов, находящихся в разработке</p>
+            </div>
         </div>
-    {% else %}
-        <div class="alert alert-info mt-4">
-            <i class="fa-solid fa-info-circle"></i> Нет активных заявок.
-        </div>
-    {% endif %}
+    </section>
 </div>
 {% endblock %}
