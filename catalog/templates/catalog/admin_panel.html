@@ -2,88 +2,97 @@
 {% load status_filters %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2><i class="fa-solid fa-screwdriver-wrench"></i> Админ-панель: Управление заявками</h2>
+    <div class="container mt-4">
+        <h2><i class="fa-solid fa-screwdriver-wrench"></i> Админ-панель: Управление заявками</h2>
 
-    {% if applications %}
-        <div class="row g-3">
-            {% for app in applications %}
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">{{ app.title }}</h5>
-                            <span class="badge bg-{{ app.get_status_display|status_badge }}">
+        {% if applications %}
+            <div class="row g-3">
+                {% for app in applications %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="card-title">{{ app.title }}</h5>
+                                    <span class="badge bg-{{ app.get_status_display|status_badge }}">
                                 {{ app.get_status_display }}
                             </span>
-                        </div>
-                        <p><strong>Пользователь:</strong> {{ app.user.username }}</p>
-                        <p><strong>Категория:</strong> {{ app.category }}</p>
-                        <p><strong>Описание:</strong> {{ app.description }}</p>
-
-                        {% if app.admin_comment %}
-                            <div class="mb-2">
-                                <strong>Комментарий администратора:</strong>
-                                <p class="text-muted">{{ app.admin_comment }}</p>
-                            </div>
-                        {% endif %}
-
-                        {% if app.design_image %}
-                            <div class="mb-2">
-                                <strong>Текущий дизайн:</strong><br>
-                                <img src="{{ app.design_image.url }}"
-                                     class="img-fluid rounded mt-2"
-                                     style="max-height: 200px; object-fit: cover;"
-                                     alt="Дизайн">
-                            </div>
-                        {% endif %}
-
-                        <form method="post" enctype="multipart/form-data" class="mt-4">
-                            {% csrf_token %}
-                            <input type="hidden" name="application_id" value="{{ app.id }}">
-
-                            <div class="mb-3">
-                                <label class="form-label">Новый статус</label>
-                                <select name="status" class="form-select">
-                                    <option value="">-- Выберите --</option>
-                                    {% if app.status == 'new' %}
-                                        <option value="in_progress">Принято в работу</option>
-                                        <option value="completed">Выполнено</option>
-                                    {% elif app.status == 'in_progress' %}
-                                        <option value="completed">Выполнено</option>
-                                    {% endif %}
-                                </select>
-                            </div>
-
-                            {% if app.status == 'new' %}
-                                <div class="mb-3">
-                                    <textarea name="admin_comment" class="form-control" rows="2">{{ app.admin_comment }}</textarea>
                                 </div>
-                            {% endif %}
+                                <p><strong>Пользователь:</strong> {{ app.user.username }}</p>
+                                <p><strong>Категория:</strong> {{ app.category }}</p>
+                                <p><strong>Описание:</strong> {{ app.description }}</p>
 
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    Новое изображение дизайна (обязательно при выборе «Выполнено»)
-                                </label>
-                                <input type="file" name="design_image" class="form-control" accept="image/*">
-                                {% if app.design_image %}
-                                    <div class="form-text">
-                                        Текущее изображение будет заменено, если загрузить новое.
+                                {% if app.admin_comment %}
+                                    <div class="mb-2">
+                                        <strong>Комментарий администратора:</strong>
+                                        <p class="text-muted">{{ app.admin_comment }}</p>
                                     </div>
                                 {% endif %}
-                            </div>
 
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa-solid fa-check"></i> Обновить статус
-                            </button>
-                        </form>
+                                {% if app.design_image %}
+                                    <div class="mb-2">
+                                        <strong>Текущий дизайн:</strong><br>
+                                        <img src="{{ app.design_image.url }}"
+                                             class="img-fluid rounded mt-2"
+                                             style="max-height: 200px; object-fit: cover;"
+                                             alt="Дизайн">
+                                    </div>
+                                {% endif %}
+
+                                <form method="post" enctype="multipart/form-data" class="mt-4">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="application_id" value="{{ app.id }}">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Новый статус</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">-- Выберите --</option>
+                                            {% if app.status == 'new' %}
+                                                <option value="in_progress"
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'in_progress' %}selected{% endif %}>Принято в работу
+                                                </option>
+                                                <option value="completed"
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>Выполнено
+                                                </option>
+                                            {% elif app.status == 'in_progress' %}
+                                                <option value="completed"
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>Выполнено
+                                                </option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                    {% if app.status == 'new' %}
+                                        <div class="mb-3">
+                                            <label class="form-label">
+                                                Комментарий (обязателен при выборе «Принято в работу»)
+                                            </label>
+                                            <textarea name="admin_comment" class="form-control"
+                                                      rows="2">{{ submitted_data.admin_comment|default:app.admin_comment }}</textarea>
+                                            {% if form_error == 'comment' and target_app_id == app.id %}
+                                                <div class="text-danger mt-1">Комментарий обязателен.</div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Новое изображение дизайна (обязательно при выборе «Выполнено»)</label>
+                                        <input type="file" name="design_image" class="form-control" accept="image/*">
+                                        {% if form_error == 'image' and target_app_id == app.id %}
+                                            <div class="text-danger mt-1">Изображение обязательно.</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-check"></i> Обновить статус
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info">Нет заявок для обработки.</div>
-    {% endif %}
-</div>
+        {% else %}
+            <div class="alert alert-info">Нет заявок для обработки.</div>
+        {% endif %}
+    </div>
 {% endblock %}

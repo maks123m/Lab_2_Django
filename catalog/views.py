@@ -139,35 +139,45 @@ def admin_panel(request):
 
     applications = Application.objects.exclude(status='completed').order_by('-created_at')
 
+    form_error = None
+    target_app_id = None
+
     if request.method == 'POST':
         app_id = request.POST.get('application_id')
         app = get_object_or_404(Application, id=app_id)
-        old_status = app.status
         new_status = request.POST.get('status')
+        comment = request.POST.get('admin_comment', '').strip()
+        design_image = request.FILES.get('design_image')
 
-        if old_status == 'new':
+        if new_status == 'in_progress':
+            if not comment:
+                form_error = 'comment'
+                target_app_id = app.id
+        elif new_status == 'completed':
+            if not design_image:
+                form_error = 'image'
+                target_app_id = app.id
+
+        if not form_error:
             if new_status == 'in_progress':
-                comment = request.POST.get('admin_comment', '').strip()
-                if not comment:
-                    return redirect('admin_panel')
                 app.admin_comment = comment
             elif new_status == 'completed':
-                design_image = request.FILES.get('design_image')
-                if not design_image:
-                    return redirect('admin_panel')
                 app.design_image = design_image
-            else:
-                return redirect('admin_panel')
-        elif old_status == 'in_progress' and new_status == 'completed':
-            design_image = request.FILES.get('design_image')
-            if not design_image:
-                return redirect('admin_panel')
-            app.design_image = design_image
-        else:
+            app.status = new_status
+            app.save()
             return redirect('admin_panel')
 
-        app.status = new_status
-        app.save()
-        return redirect('admin_panel')
+        return render(request, 'catalog/admin_panel.html', {
+            'applications': applications,
+            'form_error': form_error,
+            'target_app_id': target_app_id,
+            'submitted_data': {
+                'app_id': app_id,
+                'status': new_status,
+                'admin_comment': comment,
+            }
+        })
 
-    return render(request, 'catalog/admin_panel.html', {'applications': applications})
+    return render(request, 'catalog/admin_panel.html', {
+        'applications': applications,
+    })
