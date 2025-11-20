@@ -3,6 +3,13 @@
 
 {% block content %}
     <div class="container mt-4">
+        {% if success %}
+            <div class="alert alert-success mb-4" role="alert">
+                <i class="fa-solid fa-check-circle"></i>
+                Статус заявки успешно обновлён!
+            </div>
+        {% endif %}
+
         <h2><i class="fa-solid fa-screwdriver-wrench"></i> Админ-панель: Управление заявками</h2>
 
         {% if applications %}
@@ -48,14 +55,17 @@
                                             <option value="">-- Выберите --</option>
                                             {% if app.status == 'new' %}
                                                 <option value="in_progress"
-                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'in_progress' %}selected{% endif %}>Принято в работу
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'in_progress' %}selected{% endif %}>
+                                                    Принято в работу
                                                 </option>
                                                 <option value="completed"
-                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>Выполнено
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>
+                                                    Выполнено
                                                 </option>
                                             {% elif app.status == 'in_progress' %}
                                                 <option value="completed"
-                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>Выполнено
+                                                        {% if submitted_data and submitted_data.app_id == app.id|stringformat:"s" and submitted_data.status == 'completed' %}selected{% endif %}>
+                                                    Выполнено
                                                 </option>
                                             {% endif %}
                                         </select>
@@ -75,7 +85,8 @@
                                     {% endif %}
 
                                     <div class="mb-3">
-                                        <label class="form-label">Новое изображение дизайна (обязательно при выборе «Выполнено»)</label>
+                                        <label class="form-label">Новое изображение дизайна (обязательно при выборе
+                                            «Выполнено»)</label>
                                         <input type="file" name="design_image" class="form-control" accept="image/*">
                                         {% if form_error == 'image' and target_app_id == app.id %}
                                             <div class="text-danger mt-1">Изображение обязательно.</div>

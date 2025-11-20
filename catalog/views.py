@@ -139,8 +139,10 @@ def admin_panel(request):
 
     applications = Application.objects.exclude(status='completed').order_by('-created_at')
 
+    success = False
     form_error = None
     target_app_id = None
+    submitted_data = {}
 
     if request.method == 'POST':
         app_id = request.POST.get('application_id')
@@ -148,6 +150,13 @@ def admin_panel(request):
         new_status = request.POST.get('status')
         comment = request.POST.get('admin_comment', '').strip()
         design_image = request.FILES.get('design_image')
+
+
+        submitted_data = {
+            'app_id': app_id,
+            'status': new_status,
+            'admin_comment': comment,
+        }
 
         if new_status == 'in_progress':
             if not comment:
@@ -165,19 +174,12 @@ def admin_panel(request):
                 app.design_image = design_image
             app.status = new_status
             app.save()
-            return redirect('admin_panel')
-
-        return render(request, 'catalog/admin_panel.html', {
-            'applications': applications,
-            'form_error': form_error,
-            'target_app_id': target_app_id,
-            'submitted_data': {
-                'app_id': app_id,
-                'status': new_status,
-                'admin_comment': comment,
-            }
-        })
+            success = True
 
     return render(request, 'catalog/admin_panel.html', {
         'applications': applications,
+        'success': success,
+        'form_error': form_error,
+        'target_app_id': target_app_id,
+        'submitted_data': submitted_data,
     })
