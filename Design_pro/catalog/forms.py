@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from .models import Application
 
+
 class CustomRegistrationForm(forms.Form):
     full_name = forms.CharField(
         max_length=150,
@@ -69,6 +70,7 @@ class CustomRegistrationForm(forms.Form):
             raise ValidationError('Вы должны согласиться на обработку персональных данных.')
         return consent
 
+
 class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
@@ -99,7 +101,6 @@ class ApplicationForm(forms.ModelForm):
         ext = photo.name.split('.')[-1].lower()
         if f'.{ext}' not in allowed_extensions:
             raise ValidationError('Недопустимый формат. Разрешены: jpg, jpeg, png, bmp.')
-
 
         if photo.size > 2 * 1024 * 1024:
             raise ValidationError('Файл слишком большой. Максимум — 2 МБ.')
