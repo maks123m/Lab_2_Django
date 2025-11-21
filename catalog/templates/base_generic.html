@@ -17,8 +17,6 @@
         <ul>
             <h3>Навигация</h3>
             <li><a href="{% url 'home' %}"><i class="fa-solid fa-house"></i> Главная</a></li>
-
-
             {% if user.is_authenticated %}
                 {% if user.is_superuser %}
                     <li><a href="{% url 'admin_panel' %}"><i class="fa-solid fa-shield-halved"></i> Админ панель</a></li>
